@@ -4,6 +4,21 @@
 
 **核心特点：内存占用极低。** 空闲时实测常驻内存约 **30 MB**（RSS），远低于同类启动器。
 
+## 下载
+
+前往 [Releases](https://github.com/linghuoya/Dashkey/releases) 下载对应芯片的安装包（当前版本 **v1.0**）：
+
+| 芯片 | 文件 | 架构 |
+| --- | --- | --- |
+| Apple Silicon（M1/M2/M3/M4…） | `DashKey-v1.0-arm64.zip` | arm64 |
+| Intel | `DashKey-v1.0-x86_64.zip` | x86_64 |
+
+解压后把 `DashKey.app` 拖进「应用程序」即可。首次打开若提示"无法验证开发者"，右键点击 App → 打开，或执行：
+
+```bash
+xattr -cr /Applications/DashKey.app
+```
+
 ## 特性
 
 - **快捷键切换应用**：按键盘物理顺序自动分配 `Option` 组合键，与输入法、键盘布局无关
@@ -42,6 +57,19 @@ bash build.sh
 产物在 `Build/DashKey.app`。
 
 构建脚本会优先使用钥匙串中名为 `DashKey` 的代码签名证书；没有则自动回退 ad-hoc 签名。
+
+### 打包发布版（双芯片）
+
+```bash
+bash package.sh
+```
+
+会分别编译 Apple Silicon 与 Intel 两个版本，输出：
+
+```
+Build/DashKey-v1.0-arm64.zip
+Build/DashKey-v1.0-x86_64.zip
+```
 
 ## 安装与使用
 
