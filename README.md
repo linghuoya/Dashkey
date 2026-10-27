@@ -6,12 +6,12 @@
 
 ## 下载
 
-前往 [Releases](https://github.com/linghuoya/Dashkey/releases) 下载对应芯片的安装包（当前版本 **v1.0**）：
+前往 [Releases](https://github.com/linghuoya/Dashkey/releases) 下载对应芯片的安装包（当前版本 **v1.0.1**）：
 
 | 芯片 | 文件 | 架构 |
 | --- | --- | --- |
-| Apple Silicon（M1/M2/M3/M4…） | `DashKey-v1.0-arm64.zip` | arm64 |
-| Intel | `DashKey-v1.0-x86_64.zip` | x86_64 |
+| Apple Silicon（M1/M2/M3/M4…） | `DashKey-v1.0.1-arm64.zip` | arm64 |
+| Intel | `DashKey-v1.0.1-x86_64.zip` | x86_64 |
 
 解压后把 `DashKey.app` 拖进「应用程序」即可。首次打开若提示"无法验证开发者"，右键点击 App → 打开，或执行：
 
@@ -67,8 +67,8 @@ bash package.sh
 会分别编译 Apple Silicon 与 Intel 两个版本，输出：
 
 ```
-Build/DashKey-v1.0-arm64.zip
-Build/DashKey-v1.0-x86_64.zip
+Build/DashKey-v1.0.1-arm64.zip
+Build/DashKey-v1.0.1-x86_64.zip
 ```
 
 ## 安装与使用

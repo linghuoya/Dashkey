@@ -1,6 +1,7 @@
 import Cocoa
 import Carbon.HIToolbox
 import ServiceManagement
+import CoreGraphics
 import Darwin
 
 // MARK: - 偏好键
@@ -589,8 +590,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             return
         }
 
-        // 目标已在前台 → 再按一次隐藏它（Finder 系统禁止隐藏，会静默失败）
-        if running.isActive {
+        let pid = running.processIdentifier
+        let hasWindow = hasVisibleWindow(pid: pid)
+
+        // 已在前台且有窗口 → 再按一次隐藏它（Finder 系统禁止隐藏，会静默失败）
+        if running.isActive && hasWindow {
             running.hide()
             return
         }
@@ -601,6 +605,29 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         } else {
             running.activate(options: [.activateAllWindows, .activateIgnoringOtherApps])
         }
+
+        // 关键：再走一次 LaunchServices 的 open（等同 `open -a`，带 reopen 语义）。
+        // 不依赖 Apple Event，不会触发「自动化」授权；窗口被关光时会新建一个。
+        launch(app)
+    }
+
+    /// 目标进程是否存在「屏幕上可见」的普通窗口（layer 0 且 onscreen）。
+    /// 只看可见窗口：微信等关窗后仍前台、只剩隐藏窗口的 App 会被判定为「无窗口」，
+    /// 从而走唤起/重开逻辑，而不是被误当成"已有窗口"而执行隐藏。
+    private func hasVisibleWindow(pid: pid_t) -> Bool {
+        let options: CGWindowListOption = [.optionAll, .excludeDesktopElements]
+        guard let infos = CGWindowListCopyWindowInfo(options, kCGNullWindowID) as? [[String: Any]] else {
+            return false
+        }
+        for info in infos {
+            guard let owner = info[kCGWindowOwnerPID as String] as? Int,
+                  owner == Int(pid) else { continue }
+            let layer = info[kCGWindowLayer as String] as? Int ?? 1
+            guard layer == 0 else { continue }
+            let onscreen = info[kCGWindowIsOnscreen as String] as? Bool ?? false
+            if onscreen { return true }
+        }
+        return false
     }
 
     private func launch(_ app: DockApp) {
