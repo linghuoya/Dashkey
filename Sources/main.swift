@@ -300,7 +300,17 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     private func setupStatusItem() {
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
-        statusItem.button?.title = "\u{2325}"          // ⌥
+
+        // 优先用打包进 Resources 的键盘图标（模板图，自动适配深浅色菜单栏）
+        let url = Bundle.main.url(forResource: "StatusIcon@2x", withExtension: "png")
+            ?? Bundle.main.url(forResource: "StatusIcon", withExtension: "png")
+        if let url, let image = NSImage(contentsOf: url) {
+            image.isTemplate = true
+            image.size = NSSize(width: 18, height: 18)
+            statusItem.button?.image = image
+        } else {
+            statusItem.button?.title = "\u{2325}"          // 兜底：⌥
+        }
         statusItem.button?.toolTip = "DashKey — Option + 键切换 App"
     }
 

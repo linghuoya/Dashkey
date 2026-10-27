@@ -18,6 +18,9 @@ swiftc -O \
 
 echo "==> 组装 bundle"
 cp Info.plist "${OUT}/Contents/Info.plist"
+mkdir -p "${OUT}/Contents/Resources"
+cp Assets/AppIcon.icns "${OUT}/Contents/Resources/AppIcon.icns"
+cp Assets/StatusIcon.png Assets/StatusIcon@2x.png "${OUT}/Contents/Resources/"
 
 echo "==> 签名"
 if security find-identity -v -p codesigning 2>/dev/null | grep -qi "DashKey"; then

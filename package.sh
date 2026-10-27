@@ -30,6 +30,9 @@ for ARCH in "${ARCHS[@]}"; do
         -framework Carbon \
         -framework ServiceManagement
     cp Info.plist "${APP}/Contents/Info.plist"
+    mkdir -p "${APP}/Contents/Resources"
+    cp Assets/AppIcon.icns "${APP}/Contents/Resources/AppIcon.icns"
+    cp Assets/StatusIcon.png Assets/StatusIcon@2x.png "${APP}/Contents/Resources/"
     sign_app "$APP"
     echo "    ✓ $(lipo -archs "${APP}/Contents/MacOS/${APP_NAME}")  $(du -sh "$APP" | cut -f1)"
 done
