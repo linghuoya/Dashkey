@@ -1,0 +1,11 @@
+# 构建产物
+Build/
+*.app
+
+# macOS
+.DS_Store
+
+# Swift
+.build/
+*.o
+*.swiftmodule
