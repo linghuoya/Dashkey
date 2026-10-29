@@ -9,3 +9,8 @@ Build/
 .build/
 *.o
 *.swiftmodule
+
+# .NET
+windows/bin/
+windows/obj/
+*.user

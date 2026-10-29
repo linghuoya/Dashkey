@@ -101,6 +101,63 @@ open /Applications/DashKey.app
 - 快捷键通过 Carbon `RegisterEventHotKey` 注册，同样无需辅助功能权限。
 - `⌥Space` 在个别输入场景可能与特殊字符冲突，但全局热键会优先拦截。
 
+## Windows 版
+
+`windows/` 下是 Windows 版实现：**C# / .NET 8 + WPF**，零第三方依赖，系统能力全部走 Win32 P/Invoke（不引入任何 NuGet 包）。
+
+### 与 macOS 版的对应关系
+
+| macOS | Windows |
+| --- | --- |
+| 菜单栏图标 | 系统托盘图标 |
+| 读 Dock（`persistent-apps`） | 读任务栏固定项（`…\User Pinned\TaskBar\*.lnk`） |
+| `Option + 键` | `Alt + 键`（设置里可改为 `Ctrl + Alt + 键`） |
+| `⌥Space` 开关面板 | `Alt + 反引号键` 开关面板（`Alt+Space` 被系统占用） |
+| 长按 `Option` 呼出 | 长按 `Alt` 呼出（同样只轮询 `GetAsyncKeyState`，不装键盘钩子） |
+| 隐藏应用 | 最小化窗口 |
+
+### 构建
+
+需要 [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)。
+
+```powershell
+cd windows
+.\build.ps1                  # 单文件，依赖目标机器已装 .NET 8 桌面运行时
+.\build.ps1 -SelfContained   # 自带运行时，体积大但免装 .NET
+```
+
+产物在 `..\Build\DashKey-win-x64\DashKey.exe`。也可以直接：
+
+```powershell
+dotnet publish windows\DashKey.Windows.csproj -c Release -r win-x64 -p:PublishSingleFile=true
+```
+
+### 使用
+
+1. 运行 `DashKey.exe`，托盘出现键盘图标（无主窗口，单实例）；
+2. 按住 `Alt` 约 2 秒，鼠标所在屏幕中央浮出图标面板，松开收起；
+3. 面板显示时按 `Alt + 1` … `Alt + M` 切到对应应用，或直接用鼠标点图标；
+4. 托盘图标双击开关面板，右键出菜单（设置 / 重新读取 / 退出）。
+
+### 设置项
+
+| 项目 | 说明 |
+| --- | --- |
+| 长按触发时长 | 0.5 – 3.0 秒 |
+| 调出面板 | 分别开关「长按 Alt」与快捷键 |
+| 快捷键前缀 | `Alt` 或 `Ctrl + Alt` |
+| 图标清晰度 | 省内存 / 标准 / 高清 |
+| 开机启动 | 写 `HKCU\Software\Microsoft\Windows\CurrentVersion\Run` |
+
+配置存在 `HKCU\Software\DashKey`，日志在 `%AppData%\DashKey\dashkey.log`。
+
+### 已知差异与限制
+
+- **`Alt + 字母` 会抢掉其他程序的菜单快捷键**。Windows 上前台程序的 `Alt+F` 之类靠键盘消息处理，`RegisterHotKey` 优先级更高。介意的话把前缀切成 `Ctrl + Alt`。
+- **内存占用做不到 macOS 版的 30 MB**。WPF 运行时基线本身就在 80 MB 量级，这是框架成本；图标仍按清晰度降采样到 48 / 64 / 96 px，且只加载前 36 个。
+- **任务栏固定项顺序靠解析 `Taskband\Favorites` 的二进制值**，解析失败时退化为按名称排序，编号可能和任务栏视觉顺序不一致。
+- 只认 `.lnk` 固定项；UWP / Store 应用固定项若没有对应 `.lnk` 则不会出现。
+
 ## License
 
 MIT

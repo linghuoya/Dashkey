@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <UseWindowsForms>true</UseWindowsForms>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+
+    <AssemblyName>DashKey</AssemblyName>
+    <RootNamespace>DashKey</RootNamespace>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon>Assets\DashKey.ico</ApplicationIcon>
+
+    <Version>1.1.0</Version>
+    <Company>DashKey</Company>
+    <Product>DashKey</Product>
+    <AssemblyTitle>DashKey</AssemblyTitle>
+    <Description>任务栏应用快捷键切换器</Description>
+
+    <PublishSingleFile>true</PublishSingleFile>
+    <DebugType>embedded</DebugType>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Resource Include="Assets\DashKey.ico" />
+  </ItemGroup>
+
+</Project>
