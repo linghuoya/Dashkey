@@ -556,10 +556,33 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
     }
 
+    /// 除 Option 之外的修饰键。长按到点时若这些还按着，就不呼出面板。
+    /// 注意：这里只能判修饰键。普通键（Option+Q 输入 œ、Option+1 输入 ¡ 之类）
+    /// 在免辅助功能授权的前提下读不到，属于本方案的已知边界。
+    private static let extraModifierFlags: CGEventFlags = [
+        .maskCommand, .maskControl, .maskShift, .maskSecondaryFn
+    ]
+
+    /// Option 之外是否还按着别的修饰键。
+    /// 用白名单取交集，不能写成 `flags != .maskAlternate`：
+    /// Caps Lock 打开时 flagsState 会带上 .maskAlphaShift，那样面板会被永久堵死。
+    private func hasExtraModifier() -> Bool {
+        let flags = CGEventSource.flagsState(.hidSystemState)
+        return !flags.intersection(AppDelegate.extraModifierFlags).isEmpty
+    }
+
     private func startHoldTimer() {
         guard holdWorkItem == nil else { return }
         let work = DispatchWorkItem { [weak self] in
-            self?.showHUD()
+            guard let self else { return }
+            self.holdWorkItem = nil
+
+            if self.hasExtraModifier() {
+                NSLog("DashKey: 长按期间按着其它修饰键，忽略本次呼出")
+                return
+            }
+
+            self.showHUD()
         }
         holdWorkItem = work
         DispatchQueue.main.asyncAfter(deadline: .now() + holdDuration, execute: work)
